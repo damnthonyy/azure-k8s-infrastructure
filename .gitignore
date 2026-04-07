@@ -1,0 +1,67 @@
+# Terraform files
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+*.tfvars
+!terraform.tfvars.example
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ansible files
+*.retry
+.ansible/
+ansible.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.secret
+secrets/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Application specific
+applications/backend/bin/
+applications/backend/obj/
+applications/backend/appsettings.Development.json
+applications/frontend/node_modules/
+applications/frontend/.next/
+applications/frontend/out/
+applications/frontend/.env.local
+
+# Kubernetes secrets (never commit!)
+kubernetes/**/secrets.yml
+kubernetes/**/secrets.yaml
+
+# SSH keys and certificates
+*.pem
+*.key
+*.crt
+!*.crt.example
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Azure CLI
+.azure/
+
+# Backup files
+*.backup
+*.bak
