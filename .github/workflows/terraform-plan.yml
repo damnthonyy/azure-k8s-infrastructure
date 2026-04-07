@@ -2,13 +2,14 @@ name: Terraform Plan
 
 # Trigger on pull requests that modify Terraform files
 on:
+  workflow_dispatch: # Allow manual trigger of the workflow
   pull_request:
     branches:
       - main
       - develop
     paths:
-      - 'terraform/**'
-      - '.github/workflows/terraform-plan.yml'
+      - "terraform/**"
+      - ".github/workflows/terraform-plan.yml"
 
 # Required permissions
 permissions:
@@ -19,21 +20,21 @@ jobs:
   terraform-plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
-    
+
     # Matrix strategy to plan for all environments
     strategy:
       matrix:
         environment: [dev, staging, production]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.6.0
-      
+
       - name: Azure Login
         uses: azure/login@v2
         with:
@@ -45,7 +46,7 @@ jobs:
         #   "subscriptionId": "",
         #   "tenantId": ""
         # }
-      
+
       - name: Terraform Init
         working-directory: ./terraform/environments/${{ matrix.environment }}
         run: |
@@ -57,7 +58,7 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      
+
       - name: Terraform Plan
         working-directory: ./terraform/environments/${{ matrix.environment }}
         run: |
@@ -68,14 +69,14 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         continue-on-error: true
-      
+
       - name: Upload Plan
         uses: actions/upload-artifact@v4
         with:
           name: tfplan-${{ matrix.environment }}
           path: ./terraform/environments/${{ matrix.environment }}/tfplan-${{ matrix.environment }}
           retention-days: 5
-      
+
       - name: Comment PR with Plan
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request'
@@ -83,18 +84,18 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const output = `### Terraform Plan Results - ${{ matrix.environment }} Environment
-            
+
             <details>
             <summary>Show Plan Output</summary>
-            
+
             \`\`\`
             Plan will be displayed here in future iterations
             \`\`\`
-            
+
             </details>
-            
+
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
