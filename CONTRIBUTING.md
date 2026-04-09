@@ -138,6 +138,14 @@ After approval:
 - Merge commit (for larger features with multiple logical commits)
 - Delete the feature branch
 
+## 🔐 Branch Protection
+
+- Direct pushes to `main` and `develop` are restricted
+- All changes must go through pull requests
+- At least **1 approving review** is required
+- CI workflow **"CI - Continuous Integration"** must pass (all jobs)
+- Branch must be up to date with the target branch before merging
+
 ## 📝 Commit Guidelines
 
 ### Commit Message Format
