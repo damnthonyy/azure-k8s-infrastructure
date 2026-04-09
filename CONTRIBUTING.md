@@ -7,6 +7,7 @@ Thank you for your interest in contributing! This document provides guidelines a
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
 - [Development Workflow](#development-workflow)
+- [Branch Protection](#-branch-protection)
 - [Commit Guidelines](#commit-guidelines)
 - [Pull Request Process](#pull-request-process)
 - [Coding Standards](#coding-standards)
@@ -137,6 +138,14 @@ After approval:
 - Squash and merge (for small features)
 - Merge commit (for larger features with multiple logical commits)
 - Delete the feature branch
+
+## 🔐 Branch Protection
+
+- Direct pushes to `main` and `develop` are restricted
+- All changes must go through pull requests
+- At least **1 approving review** is required
+- CI workflow **"CI - Continuous Integration"** must pass (all jobs) for code changes; docs-only PRs (changes to `**.md` or `docs/**`) are exempt because the workflow is skipped via `paths-ignore`
+- Branch must be up to date with the target branch before merging
 
 ## 📝 Commit Guidelines
 
