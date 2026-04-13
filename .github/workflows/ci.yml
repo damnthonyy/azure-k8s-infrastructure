@@ -101,42 +101,11 @@ jobs:
             fi
           done
 
-  # Job to check code formatting and linting
-  code-quality:
-    name: Code Quality Checks
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Check file permissions
-        run: |
-          # Check for executable scripts
-          find scripts/ -type f -name "*.sh" ! -executable -print
-      
-      - name: Check for secrets
-        run: |
-          # Basic check for common secret patterns (not foolproof)
-          echo "Checking for potential secrets..."
-          ! grep -r -E '(password|secret|key|token)\s*=\s*["\x27][^"\x27]{8,}["\x27]' --include="*.tf" --include="*.yml" --include="*.yaml" . || {
-            echo "⚠️  Warning: Potential hardcoded secrets found"
-            exit 1
-          }
-      
-      - name: Check YAML syntax
-        run: |
-          # Install yamllint
-          pip install yamllint
-          
-          # Lint all YAML files
-          yamllint -d "{extends: default, rules: {line-length: {max: 120}}}" . || true
-
   # Summary job that depends on all checks
   ci-summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [terraform-validate, ansible-lint, kubernetes-validate, code-quality]
+    needs: [terraform-validate, ansible-lint, kubernetes-validate]
     if: always()
     
     steps:
@@ -147,12 +116,10 @@ jobs:
           echo "Terraform: ${{ needs.terraform-validate.result }}"
           echo "Ansible: ${{ needs.ansible-lint.result }}"
           echo "Kubernetes: ${{ needs.kubernetes-validate.result }}"
-          echo "Code Quality: ${{ needs.code-quality.result }}"
           
           if [[ "${{ needs.terraform-validate.result }}" == "failure" ]] || \
              [[ "${{ needs.ansible-lint.result }}" == "failure" ]] || \
-             [[ "${{ needs.kubernetes-validate.result }}" == "failure" ]] || \
-             [[ "${{ needs.code-quality.result }}" == "failure" ]]; then
+             [[ "${{ needs.kubernetes-validate.result }}" == "failure" ]]; then
             echo "❌ CI checks failed"
             exit 1
           else

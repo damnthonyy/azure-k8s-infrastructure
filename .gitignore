@@ -65,3 +65,7 @@ temp/
 # Backup files
 *.backup
 *.bak
+
+#other
+/plan
+/docs/memo.md
