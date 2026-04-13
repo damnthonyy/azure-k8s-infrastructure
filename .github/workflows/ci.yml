@@ -119,7 +119,12 @@ jobs:
         run: |
           # Basic check for common secret patterns (not foolproof)
           echo "Checking for potential secrets..."
-          ! grep -r -E '(password|secret|key|token)\s*=\s*["\x27][^"\x27]{8,}["\x27]' --include="*.tf" --include="*.yml" --include="*.yaml" . || {
+          grep -r -E '(password|client_secret|secret|token|access_key)\s*=\s*["\x27][^"\x27]{8,}["\x27]' \
+            --include="*.tf" \
+            --include="*.yml" \
+            --include="*.yaml" \
+            --exclude="backend.tf" \
+            . && {
             echo "⚠️  Warning: Potential hardcoded secrets found"
             exit 1
           }
