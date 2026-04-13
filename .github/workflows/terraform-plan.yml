@@ -24,7 +24,7 @@ jobs:
     # Matrix strategy to plan for all environments
     strategy:
       matrix:
-        environment: [dev, staging, production]
+        environment: [dev, staging, prod]
 
     steps:
       - name: Checkout code
