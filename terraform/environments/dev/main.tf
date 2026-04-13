@@ -1,18 +1,24 @@
 # Development Environment Configuration
-
 # This file will contain Terraform configuration for the development environment
-# Currently a placeholder - will be populated when Terraform modules are implemented
 
-# Uncomment and configure when ready:
-# terraform {
-#   required_version = ">= 1.5.0"
-#   
-#   required_providers {
-#     azurerm = {
-#       source  = "hashicorp/azurerm"
-#       version = "~> 3.0"
-#     }
-#   }
-# }
 
-# Configuration will be added in Phase 2-4
+terraform {
+  required_version = ">= 1.5"
+
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 3.0.2"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+}
+
+resource "azurerm_resource_group" "dev_rg" {
+  name     = "rg-azk8s-dev"
+  location = "francecentral"
+}
+
