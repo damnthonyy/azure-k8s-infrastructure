@@ -1,5 +1,5 @@
-# Staging Environment Configuration
-# This file will contain Terraform configuration for the staging environment
+# Production Environment Configuration
+# This file will contain Terraform configuration for the production environment
 
 
 terraform {
@@ -17,8 +17,8 @@ provider "azurerm" {
   features {}
 }
 
-resource "azurerm_resource_group" "staging_rg" {
-  name     = "rg-azk8s-staging"
+resource "azurerm_resource_group" "prod_rg" {
+  name     = "rg-azk8s-prod"
   location = "francecentral"
 }
 
