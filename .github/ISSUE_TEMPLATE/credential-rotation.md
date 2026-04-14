@@ -40,7 +40,7 @@ This is a scheduled security task to rotate Azure Service Principal credentials.
 ### Post-Rotation
 
 - [ ] Update Azure Key Vault (if used)
-- [ ] Document rotation date in [CREDENTIAL_MANAGEMENT.md](../docs/CREDENTIAL_MANAGEMENT.md)
+- [ ] Document rotation date in [CREDENTIAL_MANAGEMENT.md](/docs/CREDENTIAL_MANAGEMENT.md)
 - [ ] Create next rotation issue (90 days from now)
 - [ ] Close this issue
 
@@ -62,16 +62,16 @@ If rotation fails or credentials don't work:
 1. **Don't panic** - old credentials should still work with `--append` flag
 2. Check Azure Portal → Azure Active Directory → App Registrations
 3. Review script output for errors
-4. See [troubleshooting guide](../docs/CREDENTIAL_MANAGEMENT.md#-troubleshooting)
+4. See [troubleshooting guide](/docs/CREDENTIAL_MANAGEMENT.md#-troubleshooting)
 5. Contact DevOps team if needed
 
 ---
 
 ## 📚 Documentation
 
-- [Credential Management Guide](../docs/CREDENTIAL_MANAGEMENT.md)
-- [Azure Setup Guide](../docs/AZURE_SETUP.md)
-- [Quick Start](../docs/QUICK_START.md)
+- [Credential Management Guide](/docs/CREDENTIAL_MANAGEMENT.md)
+- [Azure Setup Guide](/docs/AZURE_SETUP.md)
+- [Quick Start](/docs/QUICK_START.md)
 
 ---
 

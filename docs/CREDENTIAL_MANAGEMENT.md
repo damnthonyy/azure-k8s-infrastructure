@@ -17,7 +17,6 @@ The project uses an **Azure Service Principal** to authenticate GitHub Actions w
 If you haven't set up credentials yet, see:
 - **Quick Start**: [docs/QUICK_START.md](./QUICK_START.md)
 - **Full Guide**: [docs/AZURE_SETUP.md](./AZURE_SETUP.md)
-- **Automated Script**: `./scripts/setup-azure-credentials.sh`
 
 ---
 
@@ -206,7 +205,7 @@ az ad sp create-for-rbac \
   --sdk-auth
 
 # 2. Update GitHub Secrets with new credentials
-# (Use setup-azure-credentials.sh script)
+# (Use the Azure Setup guide steps above to recreate credentials if needed)
 
 # 3. Test workflows
 gh workflow run ci.yml

@@ -1,24 +1,58 @@
 # AKS Terraform Module
 
-Terraform module for provisioning an Azure Kubernetes Service (AKS) cluster for the azure-k8s-infrastructure project.
+Minimal Terraform module for provisioning an Azure Kubernetes Service (AKS) cluster for the `azure-k8s-infrastructure` project.
+
+This module is intentionally small and environment-agnostic. It creates one AKS cluster with a single system node pool and expects the calling environment to provide the concrete values.
+
+## What This Module Creates
+
+- One `azurerm_kubernetes_cluster`
+- One system default node pool
+- A system-assigned managed identity
+- Basic tags
 
 ## Usage
+
+Call this module from an environment folder such as `terraform/environments/dev`, `staging`, or `prod`.
 
 ```hcl
 module "aks" {
   source = "../../modules/aks"
 
-  # Example inputs (to be refined in later issues)
-  # resource_group_name = azurerm_resource_group.main.name
-  # location            = var.location
-  # tags                = var.tags
+  cluster_name        = var.aks_cluster_name
+  dns_prefix          = var.aks_dns_prefix
+  resource_group_name = azurerm_resource_group.dev_rg.name
+  location            = azurerm_resource_group.dev_rg.location
+  node_count          = var.aks_node_count
+  vm_size             = var.aks_vm_size
+  kubernetes_version  = var.kubernetes_version
+  tags                = var.tags
 }
 ```
 
 ## Inputs
 
-Inputs will be defined in `variables.tf` as the AKS implementation is added (see issue #10).
+The module accepts the following variables:
+
+- `cluster_name` - AKS cluster name
+- `dns_prefix` - DNS prefix for the cluster
+- `resource_group_name` - Resource group name where AKS will be created
+- `location` - Azure region
+- `node_count` - Node count for the default node pool, default: `2`
+- `vm_size` - VM size for the default node pool, default: `Standard_D2s_v5`
+- `tags` - Tags to apply to the AKS resource, default: `{}`
+- `kubernetes_version` - Optional AKS Kubernetes version, default: `null`
 
 ## Outputs
 
-Outputs will be defined in `outputs.tf` to expose cluster details for other modules.
+The module exposes:
+
+- `cluster_name` - AKS cluster name
+- `cluster_id` - AKS cluster resource ID
+- `kube_config` - Raw kubeconfig, marked as sensitive
+
+## Notes
+
+- This module does not create a resource group.
+- This module does not configure networking, ACR access, or additional node pools yet.
+- Environment-specific values should be defined in the calling environment, usually through `terraform.tfvars`.
