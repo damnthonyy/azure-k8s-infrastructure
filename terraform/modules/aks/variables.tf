@@ -20,8 +20,26 @@ variable "location" {
 
 variable "node_count" {
   type        = number
-  description = "Number of nodes in the default node pool."
+  description = "Number of nodes in the default node pool (used when autoscaling is disabled)."
   default     = 2
+}
+
+variable "enable_autoscaling" {
+  type        = bool
+  description = "Enable cluster autoscaling on the system node pool."
+  default     = false
+}
+
+variable "min_node_count" {
+  type        = number
+  description = "Minimum number of nodes for autoscaling (e.g., 2)."
+  default     = 2
+}
+
+variable "max_node_count" {
+  type        = number
+  description = "Maximum number of nodes for autoscaling (e.g., 10)."
+  default     = 10
 }
 
 variable "vm_size" {
