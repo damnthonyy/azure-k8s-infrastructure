@@ -16,9 +16,20 @@ if ! command -v gh &> /dev/null; then
     exit 1
 fi
 
+if ! command -v jq &> /dev/null; then
+    echo "❌ jq not installed (required for credential rotation)"
+    echo "📦 Install with: brew install jq"
+    exit 1
+fi
+
 # Get Service Principal name
-read -p "Enter Service Principal name (default: github-actions-azure-k8s): " SP_NAME
-SP_NAME=${SP_NAME:-github-actions-azure-k8s}
+DEFAULT_SP_NAME=$(az ad sp list --display-name "github-actions-azure-k8s*" --query '[-1].displayName' -o tsv || true)
+if [ -z "$DEFAULT_SP_NAME" ]; then
+    DEFAULT_SP_NAME="github-actions-azure-k8s"
+fi
+
+read -p "Enter Service Principal name (default: $DEFAULT_SP_NAME): " SP_NAME
+SP_NAME=${SP_NAME:-$DEFAULT_SP_NAME}
 
 echo ""
 echo "🔍 Finding Service Principal: $SP_NAME"
@@ -71,13 +82,10 @@ FULL_CREDS=$(echo "$NEW_CREDS" | jq --arg sub "$SUBSCRIPTION_ID" '. + {
 echo "✅ Credentials rotated successfully"
 echo ""
 
-# Save to temporary file
-echo "$FULL_CREDS" > sp-credentials-new.json
-
 # Update GitHub Secrets
 echo "🔒 Updating GitHub Secrets..."
 
-gh secret set AZURE_CREDENTIALS < sp-credentials-new.json
+gh secret set AZURE_CREDENTIALS --body "$FULL_CREDS"
 gh secret set AZURE_CLIENT_ID --body "$(echo "$FULL_CREDS" | jq -r '.clientId')"
 gh secret set AZURE_CLIENT_SECRET --body "$(echo "$FULL_CREDS" | jq -r '.clientSecret')"
 gh secret set AZURE_TENANT_ID --body "$(echo "$FULL_CREDS" | jq -r '.tenantId')"
@@ -85,10 +93,6 @@ gh secret set AZURE_SUBSCRIPTION_ID --body "$(echo "$FULL_CREDS" | jq -r '.subsc
 
 echo "✅ GitHub Secrets updated"
 echo ""
-
-# Clean up
-rm sp-credentials-new.json
-
 echo "🎉 Credential rotation complete!"
 echo ""
 echo "📋 Next steps:"
