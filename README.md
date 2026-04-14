@@ -61,31 +61,36 @@ Ensure you have the following tools installed:
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/damnthonyy/azure-k8s-infrastructure.git
    cd azure-k8s-infrastructure
    ```
 
-2. **Azure Authentication**
+2. **Setup Azure Credentials** (5 minutes)
    ```bash
-   az login
-   az account set --subscription <your-subscription-id>
+   # Automated setup (recommended)
+   ./scripts/setup-azure-credentials.sh
+   
+   # Or follow detailed guide
+   # See: docs/QUICK_START.md
    ```
 
-3. **Create Service Principal for Terraform**
-   ```bash
-   ./scripts/create-service-principal.sh
-   ```
-
-4. **Initialize Terraform**
+3. **Initialize Terraform Backend**
    ```bash
    ./scripts/init-terraform.sh
    ```
 
-5. **Configure environment variables**
+4. **Configure environment variables**
    ```bash
    cp .env.example .env
    # Edit .env with your values
    ```
+
+### 📚 Documentation
+
+- **[Quick Start Guide](docs/QUICK_START.md)** - Get started in 5 minutes
+- **[Azure Setup](docs/AZURE_SETUP.md)** - Detailed Azure configuration
+- **[Credential Management](docs/CREDENTIAL_MANAGEMENT.md)** - Security and credential rotation
+- **[Contributing](CONTRIBUTING.md)** - Development workflow and best practices
 
 ## 📋 Deployment
 
