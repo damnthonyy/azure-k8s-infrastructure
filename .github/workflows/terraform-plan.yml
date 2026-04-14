@@ -11,6 +11,10 @@ on:
       - "terraform/**"
       - ".github/workflows/terraform-plan.yml"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 # Required permissions
 permissions:
   contents: read
