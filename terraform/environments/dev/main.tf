@@ -18,7 +18,35 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "dev_rg" {
-  name     = "rg-azk8s-dev"
-  location = "francecentral"
+  name     = var.resource_group_name
+  location = var.location
+}
+
+module "aks" {
+  source = "../../modules/aks"
+
+  cluster_name        = var.aks_cluster_name
+  dns_prefix          = var.aks_dns_prefix
+  resource_group_name = azurerm_resource_group.dev_rg.name
+  location            = azurerm_resource_group.dev_rg.location
+  node_count          = var.aks_node_count
+  vm_size             = var.aks_vm_size
+  kubernetes_version  = var.kubernetes_version
+  tags                = var.tags
+}
+
+output "resource_group_name" {
+  value       = azurerm_resource_group.dev_rg.name
+  description = "Development resource group name."
+}
+
+output "aks_cluster_name" {
+  value       = module.aks.cluster_name
+  description = "Development AKS cluster name."
+}
+
+output "aks_cluster_id" {
+  value       = module.aks.cluster_id
+  description = "Development AKS cluster id."
 }
 
