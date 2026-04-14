@@ -32,7 +32,7 @@ variable "vm_size" {
 
 variable "tags" {
   type        = map(string)
-  description = "Tags Azure."
+  description = "Tags for Azure resources."
   default     = {}
 }
 
