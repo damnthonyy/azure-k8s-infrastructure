@@ -29,10 +29,15 @@ module "aks" {
   dns_prefix          = var.aks_dns_prefix
   resource_group_name = azurerm_resource_group.prod_rg.name
   location            = azurerm_resource_group.prod_rg.location
-  node_count          = var.aks_node_count
-  vm_size             = var.aks_vm_size
-  kubernetes_version  = var.kubernetes_version
-  tags                = var.tags
+
+  node_count         = var.aks_node_count
+  vm_size            = var.aks_vm_size
+  enable_autoscaling = var.aks_enable_autoscaling
+  min_node_count     = var.aks_min_node_count
+  max_node_count     = var.aks_max_node_count
+
+  kubernetes_version = var.kubernetes_version
+  tags               = var.tags
 }
 
 output "resource_group_name" {

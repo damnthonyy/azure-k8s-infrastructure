@@ -20,8 +20,26 @@ variable "aks_dns_prefix" {
 
 variable "aks_node_count" {
   type        = number
-  description = "Node count for the AKS default node pool in production."
+  description = "Node count for the AKS default node pool in production (used when autoscaling is disabled)."
   default     = 2
+}
+
+variable "aks_enable_autoscaling" {
+  type        = bool
+  description = "Enable autoscaling for the AKS default node pool in production."
+  default     = true
+}
+
+variable "aks_min_node_count" {
+  type        = number
+  description = "Minimum number of nodes for autoscaling in production."
+  default     = 3
+}
+
+variable "aks_max_node_count" {
+  type        = number
+  description = "Maximum number of nodes for autoscaling in production."
+  default     = 10
 }
 
 variable "aks_vm_size" {
