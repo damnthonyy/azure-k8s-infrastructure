@@ -48,6 +48,11 @@ variable "vm_size" {
   default     = "Standard_D2s_v5"
 }
 
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "Log Analytics Workspace ID for Azure Monitor integration."
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags for Azure resources."

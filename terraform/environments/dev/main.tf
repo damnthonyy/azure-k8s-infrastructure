@@ -22,17 +22,26 @@ resource "azurerm_resource_group" "dev_rg" {
   location = var.location
 }
 
+resource "azurerm_log_analytics_workspace" "aks" {
+  name                = "${var.resource_group_name}-law"
+  location            = azurerm_resource_group.dev_rg.location
+  resource_group_name = azurerm_resource_group.dev_rg.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
+
 module "aks" {
   source = "../../modules/aks"
 
-  cluster_name        = var.aks_cluster_name
-  dns_prefix          = var.aks_dns_prefix
-  resource_group_name = azurerm_resource_group.dev_rg.name
-  location            = azurerm_resource_group.dev_rg.location
-  node_count          = var.aks_node_count
-  vm_size             = var.aks_vm_size
-  kubernetes_version  = var.kubernetes_version
-  tags                = var.tags
+  cluster_name               = var.aks_cluster_name
+  dns_prefix                 = var.aks_dns_prefix
+  resource_group_name        = azurerm_resource_group.dev_rg.name
+  location                   = azurerm_resource_group.dev_rg.location
+  node_count                 = var.aks_node_count
+  vm_size                    = var.aks_vm_size
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.aks.id
+  kubernetes_version         = var.kubernetes_version
+  tags                       = var.tags
 }
 
 output "resource_group_name" {

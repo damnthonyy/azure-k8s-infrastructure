@@ -50,6 +50,7 @@ The module accepts the following variables:
 - `min_node_count` - Minimum number of nodes when autoscaling is enabled, default: `2`
 - `max_node_count` - Maximum number of nodes when autoscaling is enabled, default: `10`
 - `vm_size` - VM size for the default node pool, default: `Standard_D2s_v5`
+- `log_analytics_workspace_id` - Log Analytics Workspace ID used to enable Azure Monitor integration for the cluster
 - `tags` - Tags to apply to the AKS resource, default: `{}`
 - `kubernetes_version` - Optional AKS Kubernetes version, default: `null`
 
