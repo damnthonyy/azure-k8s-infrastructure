@@ -59,3 +59,12 @@ variable "tags" {
   description = "Tags for production resources."
   default     = {}
 }
+
+variable "aks_user_node_pools" {
+  type = map(object({
+    vm_size    = string
+    node_count = number
+  }))
+  description = "User node pools for the AKS cluster in production."
+  default     = {}
+}

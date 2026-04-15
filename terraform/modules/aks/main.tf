@@ -26,3 +26,15 @@ resource "azurerm_kubernetes_cluster" "this" {
   role_based_access_control_enabled = true
   tags                              = var.tags
 }
+
+resource "azurerm_kubernetes_cluster_node_pool" "user" {
+  for_each = var.user_node_pools
+
+  name                = each.key
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.this.id
+  vm_size             = each.value.vm_size
+  node_count          = each.value.node_count
+  mode                = "User"
+
+  tags = var.tags
+}

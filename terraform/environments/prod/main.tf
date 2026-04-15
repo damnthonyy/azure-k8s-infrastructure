@@ -44,6 +44,7 @@ module "aks" {
   min_node_count     = var.aks_min_node_count
   max_node_count     = var.aks_max_node_count
 
+  user_node_pools            = var.aks_user_node_pools
   log_analytics_workspace_id = azurerm_log_analytics_workspace.aks.id
 
   kubernetes_version = var.kubernetes_version

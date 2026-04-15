@@ -64,3 +64,12 @@ variable "kubernetes_version" {
   description = "Kubernetes version for the AKS cluster."
   default     = null
 }
+
+variable "user_node_pools" {
+  type = map(object({
+    vm_size    = string
+    node_count = number
+  }))
+  description = "Additional user node pools to create on the AKS cluster. Keys are used as node pool names."
+  default     = {}
+}

@@ -39,6 +39,7 @@ module "aks" {
   location                   = azurerm_resource_group.dev_rg.location
   node_count                 = var.aks_node_count
   vm_size                    = var.aks_vm_size
+  user_node_pools            = var.aks_user_node_pools
   log_analytics_workspace_id = azurerm_log_analytics_workspace.aks.id
   kubernetes_version         = var.kubernetes_version
   tags                       = var.tags

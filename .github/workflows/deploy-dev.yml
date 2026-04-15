@@ -114,7 +114,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-backend, build-frontend]
     environment:
-      name: development
+      name: dev
       url: https://dev.azure-k8s-infrastructure.example.com
     
     steps:
