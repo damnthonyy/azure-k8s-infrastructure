@@ -20,14 +20,37 @@ variable "location" {
 
 variable "node_count" {
   type        = number
-  description = "Number of nodes in the default node pool."
+  description = "Number of nodes in the default node pool (used when autoscaling is disabled)."
   default     = 2
+}
+
+variable "enable_autoscaling" {
+  type        = bool
+  description = "Enable cluster autoscaling on the system node pool."
+  default     = false
+}
+
+variable "min_node_count" {
+  type        = number
+  description = "Minimum number of nodes for autoscaling (e.g., 2)."
+  default     = 2
+}
+
+variable "max_node_count" {
+  type        = number
+  description = "Maximum number of nodes for autoscaling (e.g., 10)."
+  default     = 10
 }
 
 variable "vm_size" {
   type        = string
   description = "VM size for the nodes in the default node pool."
   default     = "Standard_D2s_v5"
+}
+
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "Log Analytics Workspace ID for Azure Monitor integration."
 }
 
 variable "tags" {
@@ -40,4 +63,13 @@ variable "kubernetes_version" {
   type        = string
   description = "Kubernetes version for the AKS cluster."
   default     = null
+}
+
+variable "user_node_pools" {
+  type = map(object({
+    vm_size    = string
+    node_count = number
+  }))
+  description = "Additional user node pools to create on the AKS cluster. Keys are used as node pool names."
+  default     = {}
 }
