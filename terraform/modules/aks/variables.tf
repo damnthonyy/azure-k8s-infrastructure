@@ -69,7 +69,14 @@ variable "user_node_pools" {
   type = map(object({
     vm_size    = string
     node_count = number
+    zones      = optional(list(string), [])
   }))
   description = "Additional user node pools to create on the AKS cluster. Keys are used as node pool names."
   default     = {}
+}
+
+variable "default_node_pool_zones" {
+  type        = list(string)
+  description = "Availability zones used by the system node pool. Leave empty for single-zone deployment."
+  default     = []
 }

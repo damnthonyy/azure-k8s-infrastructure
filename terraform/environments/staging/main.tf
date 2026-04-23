@@ -45,6 +45,23 @@ module "aks" {
   tags                       = var.tags
 }
 
+module "postgresql" {
+  source = "../../modules/postgresql"
+
+  server_name            = var.postgresql_server_name
+  resource_group_name    = azurerm_resource_group.staging_rg.name
+  location               = azurerm_resource_group.staging_rg.location
+  administrator_login    = var.postgresql_admin_login
+  administrator_password = var.postgresql_admin_password
+  database_name          = var.postgresql_database_name
+  sku_name               = var.postgresql_sku_name
+  storage_mb             = var.postgresql_storage_mb
+  backup_retention_days  = var.postgresql_backup_retention_days
+  zone                   = var.postgresql_zone
+  firewall_rules         = var.postgresql_firewall_rules
+  tags                   = var.tags
+}
+
 output "resource_group_name" {
   value       = azurerm_resource_group.staging_rg.name
   description = "Staging resource group name."
@@ -60,3 +77,12 @@ output "aks_cluster_id" {
   description = "Staging AKS cluster id."
 }
 
+output "postgresql_server_id" {
+  value       = module.postgresql.server_id
+  description = "Staging PostgreSQL flexible server id."
+}
+
+output "postgresql_server_fqdn" {
+  value       = module.postgresql.server_fqdn
+  description = "Staging PostgreSQL flexible server FQDN."
+}

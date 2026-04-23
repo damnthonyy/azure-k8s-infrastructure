@@ -9,6 +9,7 @@ resource "azurerm_kubernetes_cluster" "this" {
     name                = "system"
     vm_size             = var.vm_size
     enable_auto_scaling = var.enable_autoscaling
+    zones               = length(var.default_node_pool_zones) > 0 ? var.default_node_pool_zones : null
 
     node_count = var.enable_autoscaling ? null : var.node_count
     min_count  = var.enable_autoscaling ? var.min_node_count : null
@@ -30,11 +31,12 @@ resource "azurerm_kubernetes_cluster" "this" {
 resource "azurerm_kubernetes_cluster_node_pool" "user" {
   for_each = var.user_node_pools
 
-  name                = each.key
+  name                  = each.key
   kubernetes_cluster_id = azurerm_kubernetes_cluster.this.id
-  vm_size             = each.value.vm_size
-  node_count          = each.value.node_count
-  mode                = "User"
+  vm_size               = each.value.vm_size
+  node_count            = each.value.node_count
+  mode                  = "User"
+  zones                 = length(each.value.zones) > 0 ? each.value.zones : null
 
   tags = var.tags
 }
