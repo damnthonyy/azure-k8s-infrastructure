@@ -10,6 +10,10 @@ on:
       - '**.md'
       - 'docs/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 # Permissions needed for the workflow
 permissions:
   contents: read
@@ -29,12 +33,11 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.0
+          terraform_version: 1.9.8
       
       - name: Terraform Format Check
         working-directory: ./terraform
         run: terraform fmt -check -recursive
-        continue-on-error: true
       
       - name: Terraform Init (Dev)
         working-directory: ./terraform/environments/dev
@@ -54,6 +57,7 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Setup Python
+        # pip cache will be re-enabled once requirements/pyproject are added
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -66,14 +70,14 @@ jobs:
       - name: Ansible Syntax Check
         working-directory: ./ansible
         run: |
-          # Check syntax for all playbooks when they exist
           if ls playbooks/*.yml 1> /dev/null 2>&1; then
+            echo "Running Ansible syntax check for playbooks"
             for playbook in playbooks/*.yml; do
               echo "Checking syntax: $playbook"
-              ansible-playbook --syntax-check "$playbook" || true
+              ansible-playbook --syntax-check "$playbook"
             done
           else
-            echo "No playbooks found yet, skipping check"
+            echo "No playbooks found yet, skipping Ansible syntax check"
           fi
 
   # Job to validate Kubernetes manifests
@@ -93,13 +97,22 @@ jobs:
       - name: Validate Kubernetes manifests
         working-directory: ./kubernetes
         run: |
-          # Validate all YAML files in kubernetes directory
+          set -e
+
+          has_manifests=false
           for dir in */; do
             if [ -d "$dir" ]; then
-              echo "Validating manifests in $dir"
-              kubectl apply --dry-run=client -f "$dir" || true
+              if ls "$dir"/*.yml "$dir"/*.yaml 1> /dev/null 2>&1; then
+                has_manifests=true
+                echo "Validating manifests in $dir"
+                kubectl apply --dry-run=client -f "$dir"
+              fi
             fi
           done
+
+          if [ "$has_manifests" = false ]; then
+            echo "No Kubernetes manifests found, skipping validation"
+          fi
 
   # Summary job that depends on all checks
   ci-summary:

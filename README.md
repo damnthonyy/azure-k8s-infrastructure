@@ -79,12 +79,11 @@ Ensure you have the following tools installed:
    ./scripts/init-terraform.sh
    ```
 
-4. **Configure environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your values
-   ```
+4. **Configure local non-secret environment variables (if needed)**
 
+   Use `.env` only for non-sensitive local configuration values. Do **not** store Azure client secrets, service principal secrets, database passwords, or other credentials in `.env` or any other local file.
+
+   If you need a local `.env`, create it from `.env.example` only for non-secret values and keep secrets in the supported credential systems described above (Azure CLI login, GitHub Actions secrets, Azure Key Vault, etc.).
 ### 📚 Documentation
 
 - **[Quick Start Guide](docs/QUICK_START.md)** - Get started in 5 minutes

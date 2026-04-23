@@ -11,6 +11,10 @@ on:
       - "terraform/**"
       - ".github/workflows/terraform-plan.yml"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 # Required permissions
 permissions:
   contents: read
@@ -33,7 +37,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.0
+          terraform_version: 1.9.8
 
       - name: Azure Login
         uses: azure/login@v2
