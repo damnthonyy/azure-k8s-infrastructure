@@ -73,11 +73,10 @@ resource "azurerm_subnet_network_security_group_association" "this" {
 resource "azurerm_route_table" "subnet" {
   for_each = var.subnets
 
-  name                          = "${var.vnet_name}-${each.key}-rt"
-  resource_group_name           = var.resource_group_name
-  location                      = var.location
-  bgp_route_propagation_enabled = !var.disable_bgp_route_propagation
-  tags                          = var.tags
+  name                = "${var.vnet_name}-${each.key}-rt"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  tags                = var.tags
 }
 
 resource "azurerm_route" "subnet_route" {

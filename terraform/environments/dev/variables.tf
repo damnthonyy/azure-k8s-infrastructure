@@ -8,6 +8,43 @@ variable "resource_group_name" {
   description = "Resource group name for development."
 }
 
+variable "networking_vnet_name" {
+  type        = string
+  description = "Virtual network name for development."
+  default     = "vnet-dev-azk8s-01"
+}
+
+variable "networking_vnet_address_space" {
+  type        = list(string)
+  description = "Address space for the development virtual network."
+  default     = ["10.20.0.0/16"]
+}
+
+variable "networking_subnets" {
+  type = map(object({
+    address_prefixes = list(string)
+    service_endpoints = optional(list(string), [
+      "Microsoft.Storage",
+      "Microsoft.KeyVault",
+    ])
+  }))
+  description = "Subnet CIDR plan for development."
+  default = {
+    aks = {
+      address_prefixes = ["10.20.1.0/24"]
+    }
+    appgw = {
+      address_prefixes = ["10.20.2.0/24"]
+    }
+    postgresql = {
+      address_prefixes = ["10.20.3.0/24"]
+    }
+    elk = {
+      address_prefixes = ["10.20.4.0/24"]
+    }
+  }
+}
+
 variable "aks_cluster_name" {
   type        = string
   description = "AKS cluster name for development."

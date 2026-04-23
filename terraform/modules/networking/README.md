@@ -47,7 +47,6 @@ Key variables:
 - `subnets` - Subnet definitions (CIDR + service endpoints).
 - `nsg_rules` - NSG rules by subnet.
 - `route_table_routes` - Optional custom routes by subnet.
-- `disable_bgp_route_propagation` - Route table BGP propagation behavior.
 - `tags` - Tags for all networking resources.
 
 ## Outputs

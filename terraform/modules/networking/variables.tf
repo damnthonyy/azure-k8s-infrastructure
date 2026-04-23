@@ -130,12 +130,6 @@ variable "route_table_routes" {
   default     = {}
 }
 
-variable "disable_bgp_route_propagation" {
-  type        = bool
-  description = "Disable BGP route propagation on route tables."
-  default     = false
-}
-
 variable "tags" {
   type        = map(string)
   description = "Tags for Azure networking resources."

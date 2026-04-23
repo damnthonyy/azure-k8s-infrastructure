@@ -8,6 +8,43 @@ variable "resource_group_name" {
   description = "Resource group name for staging."
 }
 
+variable "networking_vnet_name" {
+  type        = string
+  description = "Virtual network name for staging."
+  default     = "vnet-staging-azk8s-01"
+}
+
+variable "networking_vnet_address_space" {
+  type        = list(string)
+  description = "Address space for the staging virtual network."
+  default     = ["10.30.0.0/16"]
+}
+
+variable "networking_subnets" {
+  type = map(object({
+    address_prefixes = list(string)
+    service_endpoints = optional(list(string), [
+      "Microsoft.Storage",
+      "Microsoft.KeyVault",
+    ])
+  }))
+  description = "Subnet CIDR plan for staging."
+  default = {
+    aks = {
+      address_prefixes = ["10.30.1.0/24"]
+    }
+    appgw = {
+      address_prefixes = ["10.30.2.0/24"]
+    }
+    postgresql = {
+      address_prefixes = ["10.30.3.0/24"]
+    }
+    elk = {
+      address_prefixes = ["10.30.4.0/24"]
+    }
+  }
+}
+
 variable "aks_cluster_name" {
   type        = string
   description = "AKS cluster name for staging."

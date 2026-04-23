@@ -30,6 +30,17 @@ resource "azurerm_log_analytics_workspace" "aks" {
   retention_in_days   = 30
 }
 
+module "networking" {
+  source = "../../modules/networking"
+
+  resource_group_name = azurerm_resource_group.prod_rg.name
+  location            = azurerm_resource_group.prod_rg.location
+  vnet_name           = var.networking_vnet_name
+  vnet_address_space  = var.networking_vnet_address_space
+  subnets             = var.networking_subnets
+  tags                = var.tags
+}
+
 module "aks" {
   source = "../../modules/aks"
 
@@ -95,4 +106,14 @@ output "postgresql_server_id" {
 output "postgresql_server_fqdn" {
   value       = module.postgresql.server_fqdn
   description = "Production PostgreSQL flexible server FQDN."
+}
+
+output "networking_vnet_id" {
+  value       = module.networking.vnet_id
+  description = "Production virtual network id."
+}
+
+output "networking_subnet_ids" {
+  value       = module.networking.subnet_ids
+  description = "Production subnet ids keyed by subnet name."
 }
