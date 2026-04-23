@@ -47,7 +47,7 @@ resource "azurerm_postgresql_flexible_server_database" "this" {
 }
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "this" {
-  for_each = var.firewall_rules
+  for_each = var.delegated_subnet_id == null ? var.firewall_rules : {}
 
   name             = each.key
   server_id        = azurerm_postgresql_flexible_server.this.id

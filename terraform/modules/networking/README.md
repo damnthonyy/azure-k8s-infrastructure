@@ -1,6 +1,22 @@
 # Networking Terraform Module
 
-Terraform module for provisioning Azure networking resources such as virtual network, subnets, and NSGs.
+Terraform module for provisioning Azure networking resources for the platform base layer:
+
+- Virtual Network
+- Subnets (AKS, App Gateway, PostgreSQL, ELK)
+- Network Security Groups and rules
+- Route tables and optional custom routes
+- Service endpoints on subnets
+
+## CIDR Plan (default)
+
+| Component | CIDR |
+| --- | --- |
+| VNet | `10.20.0.0/16` |
+| AKS subnet | `10.20.1.0/24` |
+| App Gateway subnet | `10.20.2.0/24` |
+| PostgreSQL subnet | `10.20.3.0/24` |
+| ELK subnet | `10.20.4.0/24` |
 
 ## Usage
 
@@ -8,17 +24,36 @@ Terraform module for provisioning Azure networking resources such as virtual net
 module "networking" {
   source = "../../modules/networking"
 
-  # Example inputs (to be refined in later issues)
-  # resource_group_name = azurerm_resource_group.main.name
-  # location            = var.location
-  # vnet_cidr           = "10.0.0.0/16"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+  vnet_name           = "vnet-azk8s-shared"
+
+  tags = {
+    environment = "dev"
+    project     = "azure-k8s-infrastructure"
+    managed_by  = "terraform"
+  }
 }
 ```
 
 ## Inputs
 
-Inputs will be defined in `variables.tf` as the networking implementation is added (see issue #9).
+Key variables:
+
+- `resource_group_name` - Target resource group.
+- `location` - Azure region.
+- `vnet_name` - Virtual network name.
+- `vnet_address_space` - VNet CIDR list.
+- `subnets` - Subnet definitions (CIDR + service endpoints).
+- `subnets[*].delegated_service` - Optional subnet delegation target (for example PostgreSQL flexible server).
+- `nsg_rules` - NSG rules by subnet.
+- `route_table_routes` - Optional custom routes by subnet.
+- `tags` - Tags for all networking resources.
 
 ## Outputs
 
-Outputs will be defined in `outputs.tf` to expose subnet and NSG IDs for other modules (AKS, PostgreSQL, ELK, etc.).
+- `vnet_id` / `vnet_name`
+- `subnet_ids`
+- `subnet_address_prefixes`
+- `network_security_group_ids`
+- `route_table_ids`
