@@ -32,6 +32,10 @@ variable "subnets" {
       "Microsoft.Storage",
       "Microsoft.KeyVault",
     ])
+    delegated_service = optional(string)
+    delegation_actions = optional(list(string), [
+      "Microsoft.Network/virtualNetworks/subnets/join/action",
+    ])
   }))
   description = "Subnet definitions keyed by subnet name."
   default = {
@@ -63,60 +67,7 @@ variable "nsg_rules" {
     destination_address_prefix = string
   })))
   description = "NSG rules keyed by subnet name."
-  default = {
-    aks = [
-      {
-        name                       = "allow-k8s-api-internal"
-        priority                   = 100
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_ranges    = ["443"]
-        source_address_prefix      = "VirtualNetwork"
-        destination_address_prefix = "VirtualNetwork"
-      }
-    ]
-    appgw = [
-      {
-        name                       = "allow-http-https"
-        priority                   = 100
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_ranges    = ["80", "443"]
-        source_address_prefix      = "*"
-        destination_address_prefix = "*"
-      }
-    ]
-    postgresql = [
-      {
-        name                       = "allow-postgres-from-vnet"
-        priority                   = 100
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_ranges    = ["5432"]
-        source_address_prefix      = "VirtualNetwork"
-        destination_address_prefix = "VirtualNetwork"
-      }
-    ]
-    elk = [
-      {
-        name                       = "allow-elk-from-vnet"
-        priority                   = 100
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_ranges    = ["5601", "9200", "9300"]
-        source_address_prefix      = "VirtualNetwork"
-        destination_address_prefix = "VirtualNetwork"
-      }
-    ]
-  }
+  default     = {}
 }
 
 variable "route_table_routes" {

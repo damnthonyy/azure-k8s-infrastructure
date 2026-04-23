@@ -45,6 +45,7 @@ Key variables:
 - `vnet_name` - Virtual network name.
 - `vnet_address_space` - VNet CIDR list.
 - `subnets` - Subnet definitions (CIDR + service endpoints).
+- `subnets[*].delegated_service` - Optional subnet delegation target (for example PostgreSQL flexible server).
 - `nsg_rules` - NSG rules by subnet.
 - `route_table_routes` - Optional custom routes by subnet.
 - `tags` - Tags for all networking resources.

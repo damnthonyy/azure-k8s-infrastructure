@@ -27,6 +27,10 @@ variable "networking_subnets" {
       "Microsoft.Storage",
       "Microsoft.KeyVault",
     ])
+    delegated_service = optional(string)
+    delegation_actions = optional(list(string), [
+      "Microsoft.Network/virtualNetworks/subnets/join/action",
+    ])
   }))
   description = "Subnet CIDR plan for staging."
   default = {
@@ -37,12 +41,93 @@ variable "networking_subnets" {
       address_prefixes = ["10.30.2.0/24"]
     }
     postgresql = {
-      address_prefixes = ["10.30.3.0/24"]
+      address_prefixes  = ["10.30.3.0/24"]
+      delegated_service = "Microsoft.DBforPostgreSQL/flexibleServers"
     }
     elk = {
       address_prefixes = ["10.30.4.0/24"]
     }
   }
+}
+
+variable "networking_nsg_rules" {
+  type = map(list(object({
+    name                       = string
+    priority                   = number
+    direction                  = string
+    access                     = string
+    protocol                   = string
+    source_port_range          = string
+    destination_port_ranges    = list(string)
+    source_address_prefix      = string
+    destination_address_prefix = string
+  })))
+  description = "NSG rules for staging subnets."
+  default = {
+    aks = [
+      {
+        name                       = "allow-aks-control-plane"
+        priority                   = 100
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_ranges    = ["443"]
+        source_address_prefix      = "AzureCloud"
+        destination_address_prefix = "VirtualNetwork"
+      }
+    ]
+    appgw = [
+      {
+        name                       = "allow-http-https-inbound"
+        priority                   = 100
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_ranges    = ["80", "443"]
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+      }
+    ]
+    postgresql = [
+      {
+        name                       = "allow-postgresql-from-aks"
+        priority                   = 100
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_ranges    = ["5432"]
+        source_address_prefix      = "10.30.1.0/24"
+        destination_address_prefix = "10.30.3.0/24"
+      }
+    ]
+    elk = [
+      {
+        name                       = "allow-elk-from-aks"
+        priority                   = 100
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_ranges    = ["5601", "9200", "9300"]
+        source_address_prefix      = "10.30.1.0/24"
+        destination_address_prefix = "10.30.4.0/24"
+      }
+    ]
+  }
+}
+
+variable "networking_route_table_routes" {
+  type = map(list(object({
+    name                   = string
+    address_prefix         = string
+    next_hop_type          = string
+    next_hop_in_ip_address = optional(string)
+  })))
+  description = "Custom route table routes for staging."
+  default     = {}
 }
 
 variable "aks_cluster_name" {
@@ -138,16 +223,17 @@ variable "postgresql_zone" {
   default     = "1"
 }
 
+variable "postgresql_private_dns_zone_name" {
+  type        = string
+  description = "Private DNS zone name used for private PostgreSQL access."
+  default     = "private.postgres.database.azure.com"
+}
+
 variable "postgresql_firewall_rules" {
   type = map(object({
     start_ip_address = string
     end_ip_address   = string
   }))
   description = "Firewall rules for staging PostgreSQL when public access is enabled."
-  default = {
-    allow_azure_services = {
-      start_ip_address = "0.0.0.0"
-      end_ip_address   = "0.0.0.0"
-    }
-  }
+  default     = {}
 }

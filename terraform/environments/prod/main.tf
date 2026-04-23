@@ -38,7 +38,24 @@ module "networking" {
   vnet_name           = var.networking_vnet_name
   vnet_address_space  = var.networking_vnet_address_space
   subnets             = var.networking_subnets
+  nsg_rules           = var.networking_nsg_rules
+  route_table_routes  = var.networking_route_table_routes
   tags                = var.tags
+}
+
+resource "azurerm_private_dns_zone" "postgresql" {
+  name                = var.postgresql_private_dns_zone_name
+  resource_group_name = azurerm_resource_group.prod_rg.name
+  tags                = var.tags
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "postgresql" {
+  name                  = "${var.resource_group_name}-postgresql-dns-link"
+  resource_group_name   = azurerm_resource_group.prod_rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.postgresql.name
+  virtual_network_id    = module.networking.vnet_id
+  registration_enabled  = false
+  tags                  = var.tags
 }
 
 module "aks" {
@@ -80,7 +97,11 @@ module "postgresql" {
   standby_availability_zone    = var.postgresql_standby_availability_zone
   geo_redundant_backup_enabled = var.postgresql_geo_redundant_backup_enabled
   firewall_rules               = var.postgresql_firewall_rules
+  delegated_subnet_id          = module.networking.subnet_ids["postgresql"]
+  private_dns_zone_id          = azurerm_private_dns_zone.postgresql.id
   tags                         = var.tags
+
+  depends_on = [azurerm_private_dns_zone_virtual_network_link.postgresql]
 }
 
 output "resource_group_name" {
