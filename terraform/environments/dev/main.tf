@@ -30,6 +30,38 @@ resource "azurerm_log_analytics_workspace" "aks" {
   retention_in_days   = 30
 }
 
+module "networking" {
+  source = "../../modules/networking"
+
+  resource_group_name = azurerm_resource_group.dev_rg.name
+  location            = azurerm_resource_group.dev_rg.location
+  vnet_name           = var.networking_vnet_name
+  vnet_address_space  = var.networking_vnet_address_space
+  subnets             = var.networking_subnets
+  nsg_rules           = var.networking_nsg_rules
+  route_table_routes  = var.networking_route_table_routes
+  enable_azure_firewall               = var.networking_enable_azure_firewall
+  azure_firewall_name                 = var.networking_azure_firewall_name
+  azure_firewall_subnet_address_prefixes = var.networking_azure_firewall_subnet_address_prefixes
+  route_all_egress_through_firewall   = var.networking_route_all_egress_through_firewall
+  tags                = var.tags
+}
+
+resource "azurerm_private_dns_zone" "postgresql" {
+  name                = var.postgresql_private_dns_zone_name
+  resource_group_name = azurerm_resource_group.dev_rg.name
+  tags                = var.tags
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "postgresql" {
+  name                  = "${var.resource_group_name}-postgresql-dns-link"
+  resource_group_name   = azurerm_resource_group.dev_rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.postgresql.name
+  virtual_network_id    = module.networking.vnet_id
+  registration_enabled  = false
+  tags                  = var.tags
+}
+
 module "aks" {
   source = "../../modules/aks"
 
@@ -59,7 +91,11 @@ module "postgresql" {
   backup_retention_days  = var.postgresql_backup_retention_days
   zone                   = var.postgresql_zone
   firewall_rules         = var.postgresql_firewall_rules
+  delegated_subnet_id    = module.networking.subnet_ids["postgresql"]
+  private_dns_zone_id    = azurerm_private_dns_zone.postgresql.id
   tags                   = var.tags
+
+  depends_on = [azurerm_private_dns_zone_virtual_network_link.postgresql]
 }
 
 output "resource_group_name" {
@@ -85,4 +121,19 @@ output "postgresql_server_id" {
 output "postgresql_server_fqdn" {
   value       = module.postgresql.server_fqdn
   description = "Development PostgreSQL flexible server FQDN."
+}
+
+output "networking_vnet_id" {
+  value       = module.networking.vnet_id
+  description = "Development virtual network id."
+}
+
+output "networking_subnet_ids" {
+  value       = module.networking.subnet_ids
+  description = "Development subnet ids keyed by subnet name."
+}
+
+output "networking_azure_firewall_private_ip" {
+  value       = module.networking.azure_firewall_private_ip
+  description = "Development Azure Firewall private IP when enabled."
 }
