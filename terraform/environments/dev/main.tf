@@ -40,6 +40,10 @@ module "networking" {
   subnets             = var.networking_subnets
   nsg_rules           = var.networking_nsg_rules
   route_table_routes  = var.networking_route_table_routes
+  enable_azure_firewall               = var.networking_enable_azure_firewall
+  azure_firewall_name                 = var.networking_azure_firewall_name
+  azure_firewall_subnet_address_prefixes = var.networking_azure_firewall_subnet_address_prefixes
+  route_all_egress_through_firewall   = var.networking_route_all_egress_through_firewall
   tags                = var.tags
 }
 
@@ -127,4 +131,9 @@ output "networking_vnet_id" {
 output "networking_subnet_ids" {
   value       = module.networking.subnet_ids
   description = "Development subnet ids keyed by subnet name."
+}
+
+output "networking_azure_firewall_private_ip" {
+  value       = module.networking.azure_firewall_private_ip
+  description = "Development Azure Firewall private IP when enabled."
 }

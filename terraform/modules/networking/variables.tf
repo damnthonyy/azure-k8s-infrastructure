@@ -81,6 +81,64 @@ variable "route_table_routes" {
   default     = {}
 }
 
+variable "enable_azure_firewall" {
+  type        = bool
+  description = "Enable Azure Firewall deployment in this virtual network."
+  default     = false
+}
+
+variable "azure_firewall_name" {
+  type        = string
+  description = "Azure Firewall name. If null, uses <vnet_name>-afw."
+  default     = null
+}
+
+variable "azure_firewall_sku_tier" {
+  type        = string
+  description = "Azure Firewall SKU tier."
+  default     = "Standard"
+
+  validation {
+    condition     = contains(["Standard", "Premium"], var.azure_firewall_sku_tier)
+    error_message = "azure_firewall_sku_tier must be Standard or Premium."
+  }
+}
+
+variable "azure_firewall_subnet_name" {
+  type        = string
+  description = "Subnet name reserved for Azure Firewall."
+  default     = "AzureFirewallSubnet"
+}
+
+variable "azure_firewall_subnet_address_prefixes" {
+  type        = list(string)
+  description = "Address prefixes for the Azure Firewall subnet."
+  default     = ["10.20.254.0/26"]
+}
+
+variable "azure_firewall_public_ip_name" {
+  type        = string
+  description = "Public IP name for Azure Firewall. If null, uses <vnet_name>-afw-pip."
+  default     = null
+}
+
+variable "azure_firewall_threat_intel_mode" {
+  type        = string
+  description = "Threat intelligence mode for Azure Firewall."
+  default     = "Alert"
+
+  validation {
+    condition     = contains(["Off", "Alert", "Deny"], var.azure_firewall_threat_intel_mode)
+    error_message = "azure_firewall_threat_intel_mode must be Off, Alert, or Deny."
+  }
+}
+
+variable "route_all_egress_through_firewall" {
+  type        = bool
+  description = "When true and firewall is enabled, creates default routes (0.0.0.0/0) on workload subnets to the firewall."
+  default     = false
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags for Azure networking resources."

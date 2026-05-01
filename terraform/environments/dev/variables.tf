@@ -130,6 +130,30 @@ variable "networking_route_table_routes" {
   default     = {}
 }
 
+variable "networking_enable_azure_firewall" {
+  type        = bool
+  description = "Enable Azure Firewall in the development network."
+  default     = false
+}
+
+variable "networking_azure_firewall_name" {
+  type        = string
+  description = "Azure Firewall name for development."
+  default     = "afw-dev-azk8s-01"
+}
+
+variable "networking_azure_firewall_subnet_address_prefixes" {
+  type        = list(string)
+  description = "Address prefixes for the Azure Firewall subnet in development."
+  default     = ["10.20.254.0/26"]
+}
+
+variable "networking_route_all_egress_through_firewall" {
+  type        = bool
+  description = "Route all egress traffic through Azure Firewall in development."
+  default     = false
+}
+
 variable "aks_cluster_name" {
   type        = string
   description = "AKS cluster name for development."

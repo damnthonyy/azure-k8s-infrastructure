@@ -6,6 +6,7 @@ Terraform module for provisioning Azure networking resources for the platform ba
 - Subnets (AKS, App Gateway, PostgreSQL, ELK)
 - Network Security Groups and rules
 - Route tables and optional custom routes
+- Optional Azure Firewall (disabled by default)
 - Service endpoints on subnets
 
 ## CIDR Plan (default)
@@ -48,6 +49,10 @@ Key variables:
 - `subnets[*].delegated_service` - Optional subnet delegation target (for example PostgreSQL flexible server).
 - `nsg_rules` - NSG rules by subnet.
 - `route_table_routes` - Optional custom routes by subnet.
+- `enable_azure_firewall` - Deploy Azure Firewall resources, default: `false`.
+- `azure_firewall_subnet_name` - Dedicated firewall subnet name, default: `AzureFirewallSubnet`.
+- `azure_firewall_subnet_address_prefixes` - Firewall subnet CIDR.
+- `route_all_egress_through_firewall` - Add `0.0.0.0/0` routes from workload subnets to firewall, default: `false`.
 - `tags` - Tags for all networking resources.
 
 ## Outputs
@@ -57,3 +62,6 @@ Key variables:
 - `subnet_address_prefixes`
 - `network_security_group_ids`
 - `route_table_ids`
+- `azure_firewall_id`
+- `azure_firewall_private_ip`
+- `azure_firewall_public_ip`
