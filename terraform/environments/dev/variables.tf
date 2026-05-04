@@ -8,6 +8,152 @@ variable "resource_group_name" {
   description = "Resource group name for development."
 }
 
+variable "networking_vnet_name" {
+  type        = string
+  description = "Virtual network name for development."
+  default     = "vnet-dev-azk8s-01"
+}
+
+variable "networking_vnet_address_space" {
+  type        = list(string)
+  description = "Address space for the development virtual network."
+  default     = ["10.20.0.0/16"]
+}
+
+variable "networking_subnets" {
+  type = map(object({
+    address_prefixes = list(string)
+    service_endpoints = optional(list(string), [
+      "Microsoft.Storage",
+      "Microsoft.KeyVault",
+    ])
+    delegated_service = optional(string)
+    delegation_actions = optional(list(string), [
+      "Microsoft.Network/virtualNetworks/subnets/join/action",
+    ])
+  }))
+  description = "Subnet CIDR plan for development."
+  default = {
+    aks = {
+      address_prefixes = ["10.20.1.0/24"]
+    }
+    appgw = {
+      address_prefixes = ["10.20.2.0/24"]
+    }
+    postgresql = {
+      address_prefixes  = ["10.20.3.0/24"]
+      delegated_service = "Microsoft.DBforPostgreSQL/flexibleServers"
+    }
+    elk = {
+      address_prefixes = ["10.20.4.0/24"]
+    }
+  }
+}
+
+variable "networking_nsg_rules" {
+  type = map(list(object({
+    name                       = string
+    priority                   = number
+    direction                  = string
+    access                     = string
+    protocol                   = string
+    source_port_range          = string
+    destination_port_ranges    = list(string)
+    source_address_prefix      = string
+    destination_address_prefix = string
+  })))
+  description = "NSG rules for development subnets."
+  default = {
+    aks = [
+      {
+        name                       = "allow-aks-control-plane"
+        priority                   = 100
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_ranges    = ["443"]
+        source_address_prefix      = "AzureCloud"
+        destination_address_prefix = "VirtualNetwork"
+      }
+    ]
+    appgw = [
+      {
+        name                       = "allow-http-https-inbound"
+        priority                   = 100
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_ranges    = ["80", "443"]
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+      }
+    ]
+    postgresql = [
+      {
+        name                       = "allow-postgresql-from-aks"
+        priority                   = 100
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_ranges    = ["5432"]
+        source_address_prefix      = "10.20.1.0/24"
+        destination_address_prefix = "10.20.3.0/24"
+      }
+    ]
+    elk = [
+      {
+        name                       = "allow-elk-from-aks"
+        priority                   = 100
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_ranges    = ["5601", "9200", "9300"]
+        source_address_prefix      = "10.20.1.0/24"
+        destination_address_prefix = "10.20.4.0/24"
+      }
+    ]
+  }
+}
+
+variable "networking_route_table_routes" {
+  type = map(list(object({
+    name                   = string
+    address_prefix         = string
+    next_hop_type          = string
+    next_hop_in_ip_address = optional(string)
+  })))
+  description = "Custom route table routes for development."
+  default     = {}
+}
+
+variable "networking_enable_azure_firewall" {
+  type        = bool
+  description = "Enable Azure Firewall in the development network."
+  default     = false
+}
+
+variable "networking_azure_firewall_name" {
+  type        = string
+  description = "Azure Firewall name for development."
+  default     = "afw-dev-azk8s-01"
+}
+
+variable "networking_azure_firewall_subnet_address_prefixes" {
+  type        = list(string)
+  description = "Address prefixes for the Azure Firewall subnet in development."
+  default     = ["10.20.254.0/26"]
+}
+
+variable "networking_route_all_egress_through_firewall" {
+  type        = bool
+  description = "Route all egress traffic through Azure Firewall in development."
+  default     = false
+}
+
 variable "aks_cluster_name" {
   type        = string
   description = "AKS cluster name for development."
@@ -101,16 +247,17 @@ variable "postgresql_zone" {
   default     = "1"
 }
 
+variable "postgresql_private_dns_zone_name" {
+  type        = string
+  description = "Private DNS zone name used for private PostgreSQL access."
+  default     = "private.postgres.database.azure.com"
+}
+
 variable "postgresql_firewall_rules" {
   type = map(object({
     start_ip_address = string
     end_ip_address   = string
   }))
   description = "Firewall rules for development PostgreSQL when public access is enabled."
-  default = {
-    allow_azure_services = {
-      start_ip_address = "0.0.0.0"
-      end_ip_address   = "0.0.0.0"
-    }
-  }
+  default     = {}
 }
