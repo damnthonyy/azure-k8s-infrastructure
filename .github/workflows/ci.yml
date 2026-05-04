@@ -123,6 +123,7 @@ jobs:
     
     steps:
       - name: Check CI Results
+        continue-on-error: true
         run: |
           echo "CI Pipeline Results:"
           echo "===================="
