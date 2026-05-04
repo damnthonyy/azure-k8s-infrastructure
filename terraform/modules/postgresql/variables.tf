@@ -16,7 +16,7 @@ variable "location" {
 variable "postgresql_version" {
   type        = string
   description = "PostgreSQL major version."
-  default     = "14"
+  default     = "13"
 }
 
 variable "administrator_login" {

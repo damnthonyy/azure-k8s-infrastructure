@@ -261,3 +261,21 @@ variable "postgresql_firewall_rules" {
   description = "Firewall rules for development PostgreSQL when public access is enabled."
   default     = {}
 }
+
+variable "acr_name" {
+  type        = string
+  description = "Azure Container Registry name for development."
+  default     = "acrdevazk8s01"
+}
+
+variable "acr_sku" {
+  type        = string
+  description = "SKU for Azure Container Registry in development."
+  default     = "Basic"
+}
+
+variable "acr_admin_enabled" {
+  type        = bool
+  description = "Enable admin user for Azure Container Registry in development."
+  default     = false
+}

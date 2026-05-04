@@ -1,7 +1,8 @@
-// ACR module
-// Phase 2: Terraform Modules
-//
-// This module will provision Azure Container Registry (ACR) with
-// enterprise features such as geo-replication and retention policies.
-
-# TODO: add ACR resources in follow-up issues (e.g. issue #12).
+resource "azurerm_container_registry" "this" {
+  name                = var.registry_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  sku                 = var.sku
+  admin_enabled       = var.admin_enabled
+  tags                = var.tags
+}
