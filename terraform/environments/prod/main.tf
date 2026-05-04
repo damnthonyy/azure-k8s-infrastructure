@@ -33,18 +33,18 @@ resource "azurerm_log_analytics_workspace" "aks" {
 module "networking" {
   source = "../../modules/networking"
 
-  resource_group_name = azurerm_resource_group.prod_rg.name
-  location            = azurerm_resource_group.prod_rg.location
-  vnet_name           = var.networking_vnet_name
-  vnet_address_space  = var.networking_vnet_address_space
-  subnets             = var.networking_subnets
-  nsg_rules           = var.networking_nsg_rules
-  route_table_routes  = var.networking_route_table_routes
-  enable_azure_firewall               = var.networking_enable_azure_firewall
-  azure_firewall_name                 = var.networking_azure_firewall_name
+  resource_group_name                    = azurerm_resource_group.prod_rg.name
+  location                               = azurerm_resource_group.prod_rg.location
+  vnet_name                              = var.networking_vnet_name
+  vnet_address_space                     = var.networking_vnet_address_space
+  subnets                                = var.networking_subnets
+  nsg_rules                              = var.networking_nsg_rules
+  route_table_routes                     = var.networking_route_table_routes
+  enable_azure_firewall                  = var.networking_enable_azure_firewall
+  azure_firewall_name                    = var.networking_azure_firewall_name
   azure_firewall_subnet_address_prefixes = var.networking_azure_firewall_subnet_address_prefixes
-  route_all_egress_through_firewall   = var.networking_route_all_egress_through_firewall
-  tags                = var.tags
+  route_all_egress_through_firewall      = var.networking_route_all_egress_through_firewall
+  tags                                   = var.tags
 }
 
 resource "azurerm_private_dns_zone" "postgresql" {

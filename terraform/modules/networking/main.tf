@@ -21,10 +21,10 @@ locals {
     var.subnets,
     var.enable_azure_firewall ? {
       (var.azure_firewall_subnet_name) = {
-        address_prefixes    = var.azure_firewall_subnet_address_prefixes
-        service_endpoints   = []
-        delegated_service   = null
-        delegation_actions  = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+        address_prefixes   = var.azure_firewall_subnet_address_prefixes
+        service_endpoints  = []
+        delegated_service  = null
+        delegation_actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
       }
     } : {}
   )
@@ -34,8 +34,8 @@ locals {
     name => subnet if !(var.enable_azure_firewall && name == var.azure_firewall_subnet_name)
   }
 
-  azure_firewall_name      = coalesce(var.azure_firewall_name, "${var.vnet_name}-afw")
-  azure_firewall_pip_name  = coalesce(var.azure_firewall_public_ip_name, "${var.vnet_name}-afw-pip")
+  azure_firewall_name     = coalesce(var.azure_firewall_name, "${var.vnet_name}-afw")
+  azure_firewall_pip_name = coalesce(var.azure_firewall_public_ip_name, "${var.vnet_name}-afw-pip")
 
   nsg_rule_maps = [
     for subnet_name, rules in var.nsg_rules : {
