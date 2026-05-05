@@ -137,3 +137,19 @@ output "networking_azure_firewall_private_ip" {
   value       = module.networking.azure_firewall_private_ip
   description = "Development Azure Firewall private IP when enabled."
 }
+
+module "acr" {
+  source = "../../modules/acr"
+
+  resource_group_name = azurerm_resource_group.dev_rg.name
+  location            = azurerm_resource_group.dev_rg.location
+  registry_name       = var.acr_name
+  sku                 = var.acr_sku
+  admin_enabled       = var.acr_admin_enabled
+  tags                = var.tags
+}
+
+output "acr_login_server" {
+  value       = module.acr.login_server
+  description = "Development ACR login server."
+}

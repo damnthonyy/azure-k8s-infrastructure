@@ -132,3 +132,19 @@ output "networking_subnet_ids" {
   value       = module.networking.subnet_ids
   description = "Staging subnet ids keyed by subnet name."
 }
+
+module "acr" {
+  source = "../../modules/acr"
+
+  resource_group_name = azurerm_resource_group.staging_rg.name
+  location            = azurerm_resource_group.staging_rg.location
+  registry_name       = var.acr_name
+  sku                 = var.acr_sku
+  admin_enabled       = var.acr_admin_enabled
+  tags                = var.tags
+}
+
+output "acr_login_server" {
+  value       = module.acr.login_server
+  description = "Staging ACR login server."
+}

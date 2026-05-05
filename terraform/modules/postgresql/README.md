@@ -36,7 +36,7 @@ If `administrator_password` is not provided, the module generates a strong rando
 - `server_name` - PostgreSQL server name.
 - `resource_group_name` - Resource group where the server is created.
 - `location` - Azure region.
-- `postgresql_version` - PostgreSQL version, default: `14`.
+- `postgresql_version` - PostgreSQL version, default: `13`.
 - `administrator_login` - PostgreSQL administrator username.
 - `administrator_password` - Optional administrator password, default: `null` (generated).
 - `database_name` - Initial database name, default: `appdb`.

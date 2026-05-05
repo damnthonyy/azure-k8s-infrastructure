@@ -261,3 +261,21 @@ variable "postgresql_firewall_rules" {
   description = "Firewall rules for staging PostgreSQL when public access is enabled."
   default     = {}
 }
+
+variable "acr_name" {
+  type        = string
+  description = "Azure Container Registry name for staging."
+  default     = "acrstagingzk8s01"
+}
+
+variable "acr_sku" {
+  type        = string
+  description = "SKU for Azure Container Registry in staging."
+  default     = "Standard"
+}
+
+variable "acr_admin_enabled" {
+  type        = bool
+  description = "Enable admin user for Azure Container Registry in staging."
+  default     = false
+}

@@ -1,10 +1,32 @@
-/**
- * Input variables for the ACR module.
- * Define inputs such as registry_name, resource_group_name, location, sku, and retention settings.
- */
+variable "resource_group_name" {
+  type        = string
+  description = "Name of the resource group where the ACR will be created."
+}
 
-# TODO: declare ACR input variables, for example:
-# variable "registry_name" {
-#   description = "Name of the Azure Container Registry"
-#   type        = string
-# }
+variable "location" {
+  type        = string
+  description = "Azure region for the ACR."
+}
+
+variable "registry_name" {
+  type        = string
+  description = "Name of the Azure Container Registry."
+}
+
+variable "sku" {
+  type        = string
+  description = "ACR SKU."
+  default     = "Standard"
+}
+
+variable "admin_enabled" {
+  type        = bool
+  description = "Enable admin user for ACR."
+  default     = false
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags applied to the ACR."
+  default     = {}
+}
