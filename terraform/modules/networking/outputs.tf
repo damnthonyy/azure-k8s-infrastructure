@@ -42,3 +42,13 @@ output "azure_firewall_public_ip" {
   value       = try(azurerm_public_ip.firewall[0].ip_address, null)
   description = "Azure Firewall public IP when enabled, otherwise null."
 }
+
+output "nat_gateway_id" {
+  value       = try(azurerm_nat_gateway.this[0].id, null)
+  description = "NAT Gateway ID when enabled, otherwise null."
+}
+
+output "nat_gateway_public_ip" {
+  value       = try(azurerm_public_ip.nat_gateway[0].ip_address, null)
+  description = "NAT Gateway public IP when enabled, otherwise null."
+}

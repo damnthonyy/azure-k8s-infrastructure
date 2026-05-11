@@ -75,6 +75,17 @@ variable "networking_nsg_rules" {
         destination_port_ranges    = ["443"]
         source_address_prefix      = "AzureCloud"
         destination_address_prefix = "VirtualNetwork"
+      },
+      {
+        name                       = "allow-from-appgw"
+        priority                   = 110
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_ranges    = ["80", "443", "8080"]
+        source_address_prefix      = "10.20.2.0/24"
+        destination_address_prefix = "10.20.1.0/24"
       }
     ]
     appgw = [
@@ -87,6 +98,17 @@ variable "networking_nsg_rules" {
         source_port_range          = "*"
         destination_port_ranges    = ["80", "443"]
         source_address_prefix      = "*"
+        destination_address_prefix = "*"
+      },
+      {
+        name                       = "allow-gateway-manager"
+        priority                   = 110
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_ranges    = ["65200", "65535"]
+        source_address_prefix      = "GatewayManager"
         destination_address_prefix = "*"
       }
     ]
@@ -146,6 +168,48 @@ variable "networking_azure_firewall_subnet_address_prefixes" {
   type        = list(string)
   description = "Address prefixes for the Azure Firewall subnet in development."
   default     = ["10.20.254.0/26"]
+}
+
+variable "networking_enable_nat_gateway" {
+  type        = bool
+  description = "Enable NAT Gateway in the development network."
+  default     = false
+}
+
+variable "networking_nat_gateway_name" {
+  type        = string
+  description = "NAT Gateway name for development."
+  default     = "natgw-dev-azk8s-01"
+}
+
+variable "appgw_name" {
+  type        = string
+  description = "Application Gateway name for development."
+  default     = "appgw-dev-azk8s-01"
+}
+
+variable "appgw_sku_name" {
+  type        = string
+  description = "Application Gateway SKU (Standard_v2 or WAF_v2)."
+  default     = "Standard_v2"
+}
+
+variable "appgw_capacity" {
+  type        = number
+  description = "Number of Application Gateway instances."
+  default     = 2
+}
+
+variable "appgw_enable_waf" {
+  type        = bool
+  description = "Enable WAF for Application Gateway."
+  default     = false
+}
+
+variable "appgw_waf_mode" {
+  type        = string
+  description = "WAF mode: Detection or Prevention."
+  default     = "Detection"
 }
 
 variable "networking_route_all_egress_through_firewall" {
