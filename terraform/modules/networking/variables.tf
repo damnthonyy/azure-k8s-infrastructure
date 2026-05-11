@@ -139,6 +139,30 @@ variable "route_all_egress_through_firewall" {
   default     = false
 }
 
+variable "enable_nat_gateway" {
+  type        = bool
+  description = "Enable NAT Gateway for outbound egress from workload subnets."
+  default     = false
+}
+
+variable "nat_gateway_name" {
+  type        = string
+  description = "NAT Gateway name. If null, uses <vnet_name>-natgw."
+  default     = null
+}
+
+variable "nat_gateway_public_ip_name" {
+  type        = string
+  description = "Public IP name for NAT Gateway. If null, uses <vnet_name>-natgw-pip."
+  default     = null
+}
+
+variable "nat_gateway_idle_timeout" {
+  type        = number
+  description = "Idle timeout in minutes for the NAT Gateway."
+  default     = 4
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags for Azure networking resources."

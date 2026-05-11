@@ -31,7 +31,7 @@ locals {
 
   workload_subnets = {
     for name, subnet in local.all_subnets :
-    name => subnet if !(var.enable_azure_firewall && name == var.azure_firewall_subnet_name)
+    name => subnet if !(var.enable_nat_gateway && name == var.azure_firewall_subnet_name)
   }
 
   azure_firewall_name     = coalesce(var.azure_firewall_name, "${var.vnet_name}-afw")
@@ -166,4 +166,45 @@ resource "azurerm_route" "default_egress_via_firewall" {
   address_prefix         = "0.0.0.0/0"
   next_hop_type          = "VirtualAppliance"
   next_hop_in_ip_address = azurerm_firewall.this[0].ip_configuration[0].private_ip_address
+}
+
+# NAT Gateway Resources
+locals {
+  nat_gateway_name     = coalesce(var.nat_gateway_name, "${var.vnet_name}-natgw")
+  nat_gateway_pip_name = coalesce(var.nat_gateway_public_ip_name, "${var.vnet_name}-natgw-pip")
+}
+
+resource "azurerm_public_ip" "nat_gateway" {
+  count = var.enable_nat_gateway ? 1 : 0
+
+  name                = local.nat_gateway_pip_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  tags                = var.tags
+}
+
+resource "azurerm_nat_gateway" "this" {
+  count = var.enable_nat_gateway ? 1 : 0
+
+  name                    = local.nat_gateway_name
+  resource_group_name     = var.resource_group_name
+  location                = var.location
+  idle_timeout_in_minutes = var.nat_gateway_idle_timeout
+  tags                    = var.tags
+}
+
+resource "azurerm_nat_gateway_public_ip_association" "this" {
+  count = var.enable_nat_gateway ? 1 : 0
+
+  nat_gateway_id       = azurerm_nat_gateway.this[0].id
+  public_ip_address_id = azurerm_public_ip.nat_gateway[0].id
+}
+
+resource "azurerm_subnet_nat_gateway_association" "this" {
+  for_each = var.enable_nat_gateway ? local.workload_subnets : {}
+
+  subnet_id      = azurerm_subnet.this[each.key].id
+  nat_gateway_id = azurerm_nat_gateway.this[0].id
 }

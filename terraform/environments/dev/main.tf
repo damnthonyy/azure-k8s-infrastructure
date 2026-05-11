@@ -44,6 +44,8 @@ module "networking" {
   azure_firewall_name                    = var.networking_azure_firewall_name
   azure_firewall_subnet_address_prefixes = var.networking_azure_firewall_subnet_address_prefixes
   route_all_egress_through_firewall      = var.networking_route_all_egress_through_firewall
+  enable_nat_gateway                     = var.networking_enable_nat_gateway
+  nat_gateway_name                       = var.networking_nat_gateway_name
   tags                                   = var.tags
 }
 
@@ -96,6 +98,22 @@ module "postgresql" {
   tags                   = var.tags
 
   depends_on = [azurerm_private_dns_zone_virtual_network_link.postgresql]
+}
+
+module "appgateway" {
+  source = "../../modules/appgateway"
+
+  resource_group_name = azurerm_resource_group.dev_rg.name
+  location            = azurerm_resource_group.dev_rg.location
+  vnet_name           = var.networking_vnet_name
+  subnet_id           = module.networking.subnet_ids["appgw"]
+  app_gateway_name    = var.appgw_name
+  sku_name            = var.appgw_sku_name
+  sku_tier            = var.appgw_sku_name
+  capacity            = var.appgw_capacity
+  enable_waf          = var.appgw_enable_waf
+  waf_mode            = var.appgw_waf_mode
+  tags                = var.tags
 }
 
 output "resource_group_name" {
